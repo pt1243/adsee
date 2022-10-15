@@ -1,5 +1,4 @@
 from math import cos, degrees, log10, pi, radians, sin, sqrt, asin, tan
-import astropy.units as u
 
 
 # constants
