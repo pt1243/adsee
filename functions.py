@@ -1,100 +1,115 @@
-from math import log10, pi
+from math import cos, degrees, log10, pi, radians, sin, sqrt, asin, tan
 import astropy.units as u
-from astropy.constants import c, k_B
-from astropy.units import Quantity
-from typing import Union
 
 
-def to_db(x, reference: Union[Quantity, int, float] = 1 * u.W) -> Quantity[u.dB]:
-    """Converts a quantity to dB against a reference value.
+# constants
+c = 299792458           # m/s
+k_B = 1.380649e-23      # J/K
 
-    Arguments:
-        x -- quantity to convert to dB
-
-    Keyword Arguments:
-        reference -- reference value with units (default: {1*u.W})
-
-    Returns:
-        quantity in dB
-    """
-    return 10 * log10(x / reference) * u.dB
-
-
-def wavelength_to_frequency(λ: Quantity[u.m]) -> Quantity[u.Hz]:
-    """Frequency of an electromagnetic wave given the wavelength.
-
-    Arguments:
-        λ -- wavelength
-
-    Returns:
-        frequency
-    """
-    return (c / λ).decompose()
+# planets
+earth_gm = 398600.436   # km^3 s^-2
+earth_R = 6371          # km
+earth_d = 149598023000  # m
+moon_gm = 4902.800      # km^3 s^-2
+moon_R = 1737.4         # km
+moon_d = 384399000      # km
+mercury_gm = 22032.09   # km^3 s^-2
+mercury_R = 2439.7      # km
+mercury_d = 46001195642 # m
+mars_gm = 42828.37362   # km^3 s^-2
+mars_R = 3389.5         # km
+mars_d = 227939366000   # m
+saturn_gm = 37931206.23 # km^3 s^-2
+saturn_R = 58232        # km
+saturn_d = 4.335e11     # m
 
 
-def frequency_to_wavelength(f: Quantity[u.Hz]) -> Quantity[u.m]:
-    """Wavelength of an electromagnetic wave given the frequency.
-
-    Arguments:
-        f -- frequency
-
-    Returns:
-        wavelength
-    """
-    return (c / f).decompose()
+def db(x, inverse=False):
+    ans = 10 * log10(x)
+    return -ans if inverse else ans
 
 
-def L_s(d: Quantity[u.m], λ: Quantity[u.m]) -> Quantity[u.dB]:
-    """Free space loss due to the transmitted power spreading over a wider area.
-
-    Arguments:
-        d -- distance
-        λ -- wavelength
-
-    Returns:
-        loss in dB
-    """
-    return 20 * log10(4 * pi * d / λ) * u.dB
+def freq_to_wavelength(f):
+    return c / f
 
 
-def N_0(T_s: Quantity[u.K]) -> Quantity[u.W / u.Hz]:
-    """Noise spectral density (N_0) from the system noise temperature.
-
-    Arguments:
-        T_s -- system noise temperature
-
-    Returns:
-        noise spectral density
-    """
-    return (T_s * k_B).to(u.W / u.Hz)
+def g_ant_db(wavelength, d, eta):
+    return db(pi ** 2 * d ** 2 / wavelength ** 2 * eta)
 
 
-def total_white_noise_power(T_s: Quantity[u.K], B: Quantity[u.Hz]) -> Quantity[u.W]:
-    """Total white noise spectral power over a bandwidth.
+def s_leo(h_km, elev):
+    if elev == 0:
+        return sqrt((earth_R + h_km) ** 2 - earth_R ** 2) * 1000
+    if elev == 90:
+        return h_km * 1000
+    theta = radians(elev)
+    alpha = asin(earth_R * sin(pi/2 + theta) / (earth_R + h_km))
+    beta = pi/2 - theta - alpha
+    s = (earth_R + h_km) * sin(beta) / sin(pi/2 + theta)
+    return s * 1000
 
-    Arguments:
-        T_s -- system noise temperature
-        B -- bandwidth
 
-    Returns:
-        total spectral power
-    """
-    return (T_s * k_B * B).to(u.W)
+def l_s_db(h_km, elev, wavelength, planet, elongation):
+    if planet == 'Earth':
+        s = s_leo(h_km, elev)
+        return db((wavelength / (4 * pi * s)) ** 2)
+    if planet == 'Moon':
+        s = moon_d
+        return db((wavelength / (4 * pi * s)) ** 2)
+    if planet == 'Mercury':
+        ds = mercury_d
+    if planet == 'Mars':
+        ds = mars_d
+    if planet == 'Saturn':
+        ds = saturn_d
+    s = sqrt(earth_d ** 2 + ds ** 2 - 2 * earth_d * ds * cos(radians(elongation)))
+    return db((wavelength / (4 * pi * s)) ** 2)
 
 
-def T_sys(T_ant: Quantity[u.K], L: Quantity[u.dimensionless_unscaled], F: Quantity[u.dimensionless_unscaled],
-          T_0: Quantity[u.dimensionless_unscaled] = 290 * u.K) -> Quantity[u.K]:
-    """Recieving ground station system noise temperature.
+def l_pr_db(f_ghz, d, e_tt, e_t_alpha_1_2_r):
+    alpha_1_2_t = 21 / (f_ghz * d)
+    return -12 * ((e_tt/alpha_1_2_t) ** 2 + e_t_alpha_1_2_r ** 2)
 
-    Arguments:
-        T_ant -- antenna noise temperature
-        L -- cable loss factor, L <= 1
-        F -- amplifier noise figure, F >= 1
 
-    Keyword Arguments:
-        T_0 -- reference noise temperature (default: {290*u.K})
+def one_over_r_db(swath_width, pixel_size, bits_per_px, h_km, planet, d_c_percent, t_dl):
+    if planet == 'Earth':
+        gm, r = earth_gm, earth_R
+    if planet == 'Moon':
+        gm, r = moon_gm, moon_R
+    if planet == 'Mercury':
+        gm, r = mercury_gm, mercury_R
+    if planet == 'Mars':
+        gm, r = mars_gm, mars_R
+    if planet == 'Saturn':
+        gm, r = saturn_gm, saturn_R
+    h = h_km * 1000
+    v = sqrt(gm / (h_km + r)) * 1000
+    swath_width_m = h * tan(radians(swath_width))
+    pixel_size_m = h * tan(radians(pixel_size / 60))
+    r_g = bits_per_px * swath_width_m * v / pixel_size_m ** 2
+    r = r_g * (d_c_percent / 100) / (t_dl / 24)
+    """px_per_row = swath_width / (pixel_size / 60)
+    bits_per_row = px_per_row * bits_per_px
+    row_height_deg = pixel_size / 60
+    sc_time_per_row = h * tan(radians(row_height_deg)) / v
+    r_g_2 = bits_per_row / sc_time_per_row
+    print(f'r_g with spreadsheet method =  {r_g_2}')
+    print(f'r_g with formula from slides = {r_g}')
+    print('ratio =', r_g / r_g_2)"""
+    return db(r, inverse=True)
 
-    Returns:
-        system noise temperature
-    """
-    return T_ant + T_0 * (1 - L) / L + T_0 * (F - 1)
+
+def one_over_k_b_db():
+    return db(k_B, inverse=True)
+
+
+def loss_factor_db(l):
+    return db(l)
+
+
+def p_db(p):
+    return db(p)
+
+
+def one_over_t_s_db(t_s):
+    return db(t_s, inverse=True)
