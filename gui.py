@@ -450,18 +450,86 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
         # code starts here
-        
-        all_inputs = [
+        self.validate_non_negative = QtGui.QDoubleValidator(0, 1e100, 100)
+        self.validate_allow_negative = QtGui.QDoubleValidator()
+        self.validate_percentage = QtGui.QDoubleValidator(0, 100, 100)
+        self.validate_zero_to_one = QtGui.QDoubleValidator(0, 1, 100)
+        self.validate_integer = QtGui.QIntValidator()
+        self.validate_special_dl_time = QtGui.QDoubleValidator(0, 24, 100) 
+        self.validate_special_turn_around_ratio = QtGui.QRegularExpressionValidator(QtCore.QRegularExpression(r'([0-9]+(/[0-9]+)+)'))
+        self.validate_special_mantissa = QtGui.QDoubleValidator(1, 10, 100)
+        self.validate_special_elongation = QtGui.QDoubleValidator(0, 180, 100)
+        self.validate_special_elevation = QtGui.QDoubleValidator(0, 90, 100)
+
+        self.all_text_inputs_with_validators = {
             # downlink information
-            self.in_swath_width,
-            self.in_px_size,
-            self.in_bppx,
-            self.in_duty_cycle,
-            self.in_dl_time,
-            self.in_req_dl_ebn0,
+            self.in_swath_width: self.validate_non_negative,
+            self.in_px_size: self.validate_non_negative,
+            self.in_bppx: self.validate_non_negative,
+            self.in_duty_cycle: self.validate_percentage,
+            self.in_dl_time: self.validate_special_dl_time,
+            self.in_req_dl_ebn0: self.validate_allow_negative,
             
-            #
-        ]
+            # link information
+            self.in_dl_f: self.validate_non_negative,
+            self.in_turn_around: self.validate_special_turn_around_ratio,
+            self.in_tx_loss_factor: self.validate_zero_to_one,
+            self.in_rx_loss_factor: self.validate_zero_to_one,
+            self.in_path_loss: self.validate_allow_negative,
+            self.in_up_req_ebn0: self.validate_allow_negative,
+            self.in_up_r_mantissa: self.validate_special_mantissa,
+            self.in_up_r_exp: self.validate_integer,
+            self.in_orbit_alt: self.validate_non_negative,
+            
+            # spacecraft
+            self.in_sc_power: self.validate_non_negative,
+            self.in_sc_ant_d: self.validate_non_negative,
+            self.in_sc_ant_eta: self.validate_zero_to_one,
+            self.in_sc_point: self.validate_non_negative,
+            self.in_sc_t_sys: self.validate_non_negative,
+            
+            # ground station
+            self.in_gs_power: self.validate_non_negative,
+            self.in_gs_ant_d: self.validate_non_negative,
+            self.in_gs_point: self.validate_non_negative,
+            self.in_gs_ant_eta: self.validate_zero_to_one,
+            self.in_gs_t_sys: self.validate_non_negative,
+        }
+        
+        self.normal_names = {
+            # downlink information
+            self.in_swath_width: 'Payload swath width',
+            self.in_px_size: 'Pixel size',
+            self.in_bppx: 'Bits per pixel',
+            self.in_duty_cycle: 'Duty cycle',
+            self.in_dl_time: 'Downlink time',
+            self.in_req_dl_ebn0: 'Required downlink Eb/N0',
+            
+            # link information
+            self.in_dl_f: 'Downlink frequency',
+            self.in_turn_around: 'Turn around ratio',
+            self.in_tx_loss_factor: 'Transmitter loss factor',
+            self.in_rx_loss_factor: 'Receiver loss factor',
+            self.in_path_loss: 'Path loss',
+            self.in_up_req_ebn0: 'Required uplink Eb/N0',
+            self.in_up_r_mantissa: 'Uplink data rate mantissa',
+            self.in_up_r_exp: 'Uplink data rate exponent',
+            self.in_orbit_alt: 'Orbit altitude',
+            
+            # spacecraft
+            self.in_sc_power: 'Spacecraft transmitter power',
+            self.in_sc_ant_d: 'Spacecraft antenna diameter',
+            self.in_sc_ant_eta: 'Spacecraft antenna efficiency',
+            self.in_sc_point: 'Spacecraft pointing offset',
+            self.in_sc_t_sys: 'Spacecraft system noise temperature',
+            
+            # ground station
+            self.in_gs_power: 'Ground station transmitter power',
+            self.in_gs_ant_d: 'Ground station antenna diameter',
+            self.in_gs_point: 'Ground station pointing offset',
+            self.in_gs_ant_eta: 'Ground station antenna efficiency',
+            self.in_gs_t_sys: 'Ground station system noise temperature',
+        }
         
         self.calculate.clicked.connect(self.check_for_errors)
 
@@ -573,16 +641,29 @@ class Ui_MainWindow(object):
     def show_calculation_error(self, error_text):
         msg = QMessageBox()
         msg.setWindowTitle("Calculation error!")
-        msg.setText("One or more errors have occurred:")
+        msg.setText("One or more errors have occurred in the following input fields:")
         msg.setIcon(QMessageBox.Icon.Critical)
         msg.setInformativeText(error_text)
         msg.exec()
     
     def check_for_errors(self):
         errors_found = False
+        error_string = ''
         
-
+        for input_box, validator in self.all_text_inputs_with_validators.items():
+            input_box.setValidator(validator)
+            if not input_box.hasAcceptableInput():
+                error_string += self.normal_names[input_box]
+                error_string += '\n'
+                errors_found = True
+        
+        if errors_found:
+            self.show_calculation_error(error_string)
+        else:
+            self.calculate_budget()
     
+    def calculate_budget(self):
+        ...
     
 
 if __name__ == "__main__":
