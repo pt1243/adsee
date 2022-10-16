@@ -13,6 +13,7 @@
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
+
 import functions as fns
 
 
@@ -554,6 +555,8 @@ class Ui_MainWindow(object):
             input_box.textChanged.connect(lambda x, input_box=input_box: self.text_changed(input_box))
         self.in_elong.textChanged.connect(lambda: self.text_changed(self.in_elong))
         self.in_elev.textChanged.connect(lambda: self.text_changed(self.in_elev))
+        
+        self.set_tab_order()
 
     # ignore this
     def retranslateUi(self, MainWindow):
@@ -660,6 +663,35 @@ class Ui_MainWindow(object):
         self.out_ul_eb_n0_req.setText(_translate("MainWindow", "+0.00"))
         self.out_ul_margin.setText(_translate("MainWindow", "+0.00"))
         self.label_133.setText(_translate("MainWindow", "Parameter name"))
+
+    def set_tab_order(self):
+        self.centralwidget.setTabOrder(self.in_swath_width, self.in_px_size)
+        self.centralwidget.setTabOrder(self.in_px_size, self.in_bppx)
+        self.centralwidget.setTabOrder(self.in_bppx, self.in_duty_cycle)
+        self.centralwidget.setTabOrder(self.in_duty_cycle, self.in_dl_time)
+        self.centralwidget.setTabOrder(self.in_dl_time, self.in_req_dl_ebn0)
+        self.centralwidget.setTabOrder(self.in_req_dl_ebn0, self.in_sc_power)
+        self.centralwidget.setTabOrder(self.in_sc_power, self.in_sc_ant_d)
+        self.centralwidget.setTabOrder(self.in_sc_ant_d, self.in_sc_ant_eta)
+        self.centralwidget.setTabOrder(self.in_sc_ant_eta, self.in_sc_point)
+        self.centralwidget.setTabOrder(self.in_sc_point, self.in_sc_t_sys)
+        self.centralwidget.setTabOrder(self.in_sc_t_sys, self.in_gs_power)
+        self.centralwidget.setTabOrder(self.in_gs_power, self.in_gs_ant_d)
+        self.centralwidget.setTabOrder(self.in_gs_ant_d, self.in_gs_point)
+        self.centralwidget.setTabOrder(self.in_gs_point, self.in_gs_ant_eta)
+        self.centralwidget.setTabOrder(self.in_gs_ant_eta, self.in_gs_t_sys)
+        self.centralwidget.setTabOrder(self.in_gs_t_sys, self.in_dl_f)
+        self.centralwidget.setTabOrder(self.in_dl_f, self.in_turn_around)
+        self.centralwidget.setTabOrder(self.in_turn_around, self.in_tx_loss_factor)
+        self.centralwidget.setTabOrder(self.in_tx_loss_factor, self.in_rx_loss_factor)
+        self.centralwidget.setTabOrder(self.in_rx_loss_factor, self.in_path_loss)
+        self.centralwidget.setTabOrder(self.in_path_loss, self.in_up_req_ebn0)
+        self.centralwidget.setTabOrder(self.in_up_req_ebn0, self.in_up_r_mantissa)
+        self.centralwidget.setTabOrder(self.in_up_r_mantissa, self.in_up_r_exp)
+        self.centralwidget.setTabOrder(self.in_up_r_exp, self.dropdown_planet)
+        self.centralwidget.setTabOrder(self.dropdown_planet, self.in_orbit_alt)
+        self.centralwidget.setTabOrder(self.in_orbit_alt, self.in_elong)
+        self.centralwidget.setTabOrder(self.in_elong, self.in_elev)
 
     def check_planet_choice(self):
         self.planet_idx = self.dropdown_planet.currentIndex()
