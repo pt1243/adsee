@@ -1,4 +1,4 @@
-from math import cos, degrees, log10, pi, radians, sin, sqrt, asin, tan
+from math import cos, log10, pi, radians, sin, sqrt, asin, tan
 
 
 # constants
@@ -70,7 +70,7 @@ def l_pr_db(f_ghz, d, e_tt, e_t_alpha_1_2_r):
     return -12 * ((e_tt/alpha_1_2_t) ** 2 + e_t_alpha_1_2_r ** 2)
 
 
-def one_over_r_db(swath_width, pixel_size, bits_per_px, h_km, planet, d_c_percent, t_dl):
+def one_over_r_dl_db(swath_width, pixel_size, bits_per_px, h_km, planet, d_c, t_dl):
     if planet == 'Earth':
         gm, r = earth_gm, earth_R
     if planet == 'Moon':
@@ -86,15 +86,7 @@ def one_over_r_db(swath_width, pixel_size, bits_per_px, h_km, planet, d_c_percen
     swath_width_m = h * tan(radians(swath_width))
     pixel_size_m = h * tan(radians(pixel_size / 60))
     r_g = bits_per_px * swath_width_m * v / pixel_size_m ** 2
-    r = r_g * (d_c_percent / 100) / (t_dl / 24)
-    """px_per_row = swath_width / (pixel_size / 60)
-    bits_per_row = px_per_row * bits_per_px
-    row_height_deg = pixel_size / 60
-    sc_time_per_row = h * tan(radians(row_height_deg)) / v
-    r_g_2 = bits_per_row / sc_time_per_row
-    print(f'r_g with spreadsheet method =  {r_g_2}')
-    print(f'r_g with formula from slides = {r_g}')
-    print('ratio =', r_g / r_g_2)"""
+    r = r_g * d_c / (t_dl / 24)
     return db(r, inverse=True)
 
 
