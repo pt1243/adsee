@@ -724,6 +724,16 @@ class Ui_MainWindow(object):
                     for obj, normal_name in self.normal_names.items():
                         if normal_name == common_name:
                             obj.setText(field_value)
+        if data['constraints']:
+            for obj in self.all_text_inputs_with_validators:
+                obj.setDisabled(False)
+                obj.setStyleSheet(self.colours['white'])
+            for common_name, constraint in data['constraints'].items():
+                for obj, normal_name in self.normal_names.items():
+                    if normal_name == common_name:
+                        if constraint:
+                            obj.setDisabled(True)
+                            obj.setStyleSheet(self.colours['gray'])
         self.check_planet_choice()
     
     def set_tab_order(self):
@@ -760,11 +770,11 @@ class Ui_MainWindow(object):
         if self.planet_idx <= 1: # earth or moon
             self.in_elong.setDisabled(True)
             self.in_elev.setDisabled(False)
-            self.in_elong.setStyleSheet('QLineEdit { background-color: gray')
+            self.in_elong.setStyleSheet(self.colours['gray'])
         else: # interplanetary
             self.in_elong.setDisabled(False)
             self.in_elev.setDisabled(True)
-            self.in_elev.setStyleSheet('QLineEdit { background-color: gray')
+            self.in_elev.setStyleSheet(self.colours['gray'])
             
     def text_changed(self, input_box):
         input_box.setStyleSheet('QLineEdit { background-color: rgb(255, 255, 255)}')
@@ -788,8 +798,6 @@ class Ui_MainWindow(object):
                 input_box.setStyleSheet(self.colours['red'])
                 error_string += '\n'
                 errors_found = True
-            else:
-                input_box.setStyleSheet(self.colours['white'])
                 
         self.in_elev.setValidator(self.validate_special_elevation)
         self.in_elong.setValidator(self.validate_special_elongation)
@@ -927,8 +935,6 @@ class Ui_MainWindow(object):
             self.out_ul_margin.setStyleSheet(self.colours['margin_green'])
         else:
             self.out_ul_margin.setStyleSheet(self.colours['margin_red'])
-            
-    # todo: implement JSON import/export
     
 
 if __name__ == "__main__":
