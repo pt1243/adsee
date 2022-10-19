@@ -10,9 +10,11 @@
 # this code is barely comprehensible. scroll down to 'code starts here' 
 # and ignore the entirety of retranslateUi
 
+from dataclasses import field
+import json
+from pprint import pprint
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtWidgets import QMessageBox
 
 import functions as fns
 
@@ -20,11 +22,11 @@ import functions as fns
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(765, 700)
+        MainWindow.resize(765, 709)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.calculate = QtWidgets.QPushButton(self.centralwidget)
-        self.calculate.setGeometry(QtCore.QRect(10, 620, 251, 41))
+        self.calculate.setGeometry(QtCore.QRect(10, 590, 251, 31))
         self.calculate.setObjectName("calculate")
         self.link_info_groupbox = QtWidgets.QGroupBox(self.centralwidget)
         self.link_info_groupbox.setGeometry(QtCore.QRect(270, 10, 481, 251))
@@ -128,7 +130,7 @@ class Ui_MainWindow(object):
         self.in_up_req_ebn0.setObjectName("in_up_req_ebn0")
         self.gridLayout_4.addWidget(self.in_up_req_ebn0, 2, 3, 1, 1)
         self.spacecraft_groupbox = QtWidgets.QGroupBox(self.centralwidget)
-        self.spacecraft_groupbox.setGeometry(QtCore.QRect(10, 240, 251, 181))
+        self.spacecraft_groupbox.setGeometry(QtCore.QRect(10, 230, 251, 181))
         self.spacecraft_groupbox.setObjectName("spacecraft_groupbox")
         self.layoutWidget3 = QtWidgets.QWidget(self.spacecraft_groupbox)
         self.layoutWidget3.setGeometry(QtCore.QRect(9, 26, 231, 136))
@@ -212,7 +214,7 @@ class Ui_MainWindow(object):
         self.lbl_req_dl_ebn0.setObjectName("lbl_req_dl_ebn0")
         self.downlink_gridlayout.addWidget(self.lbl_req_dl_ebn0, 5, 0, 1, 1)
         self.ground_station_groupbox = QtWidgets.QGroupBox(self.centralwidget)
-        self.ground_station_groupbox.setGeometry(QtCore.QRect(10, 430, 251, 181))
+        self.ground_station_groupbox.setGeometry(QtCore.QRect(10, 410, 251, 171))
         self.ground_station_groupbox.setObjectName("ground_station_groupbox")
         self.layoutWidget5 = QtWidgets.QWidget(self.ground_station_groupbox)
         self.layoutWidget5.setGeometry(QtCore.QRect(11, 26, 225, 136))
@@ -444,6 +446,12 @@ class Ui_MainWindow(object):
         self.label_133 = QtWidgets.QLabel(self.layoutWidget6)
         self.label_133.setObjectName("label_133")
         self.output_gridlayout.addWidget(self.label_133, 0, 1, 1, 1)
+        self.loadbutton = QtWidgets.QPushButton(self.centralwidget)
+        self.loadbutton.setGeometry(QtCore.QRect(10, 630, 121, 31))
+        self.loadbutton.setObjectName("loadbutton")
+        self.savebutton = QtWidgets.QPushButton(self.centralwidget)
+        self.savebutton.setGeometry(QtCore.QRect(140, 630, 121, 31))
+        self.savebutton.setObjectName("savebutton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 765, 22))
@@ -456,113 +464,12 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
-        # code starts here
-        self.validate_non_negative = QtGui.QDoubleValidator(0, 1e100, 100)
-        self.validate_allow_negative = QtGui.QDoubleValidator()
-        self.validate_percentage = QtGui.QDoubleValidator(0, 100, 100)
-        self.validate_zero_to_one = QtGui.QDoubleValidator(0, 1, 100)
-        self.validate_integer = QtGui.QIntValidator()
-        self.validate_special_dl_time = QtGui.QDoubleValidator(0, 24, 100) 
-        self.validate_special_turn_around_ratio = QtGui.QRegularExpressionValidator(QtCore.QRegularExpression(r'([0-9]+(/[0-9]+)+)'))
-        self.validate_special_mantissa = QtGui.QDoubleValidator(1, 10, 100)
-        self.validate_special_elongation = QtGui.QDoubleValidator(0, 180, 100)
-        self.validate_special_elevation = QtGui.QDoubleValidator(0, 90, 100)
+        self.setup()
 
-        self.all_text_inputs_with_validators = {
-            # downlink information
-            self.in_swath_width: self.validate_non_negative,
-            self.in_px_size: self.validate_non_negative,
-            self.in_bppx: self.validate_non_negative,
-            self.in_duty_cycle: self.validate_zero_to_one,
-            self.in_dl_time: self.validate_special_dl_time,
-            self.in_req_dl_ebn0: self.validate_allow_negative,
-            
-            # link information
-            self.in_dl_f: self.validate_non_negative,
-            self.in_turn_around: self.validate_special_turn_around_ratio,
-            self.in_tx_loss_factor: self.validate_zero_to_one,
-            self.in_rx_loss_factor: self.validate_zero_to_one,
-            self.in_path_loss: self.validate_allow_negative,
-            self.in_up_req_ebn0: self.validate_allow_negative,
-            self.in_up_r_mantissa: self.validate_special_mantissa,
-            self.in_up_r_exp: self.validate_integer,
-            self.in_orbit_alt: self.validate_non_negative,
-            
-            # spacecraft
-            self.in_sc_power: self.validate_non_negative,
-            self.in_sc_ant_d: self.validate_non_negative,
-            self.in_sc_ant_eta: self.validate_zero_to_one,
-            self.in_sc_point: self.validate_non_negative,
-            self.in_sc_t_sys: self.validate_non_negative,
-            
-            # ground station
-            self.in_gs_power: self.validate_non_negative,
-            self.in_gs_ant_d: self.validate_non_negative,
-            self.in_gs_point: self.validate_non_negative,
-            self.in_gs_ant_eta: self.validate_zero_to_one,
-            self.in_gs_t_sys: self.validate_non_negative,
-        }
-        
-        self.normal_names = {
-            # downlink information
-            self.in_swath_width: 'Payload swath width',
-            self.in_px_size: 'Pixel size',
-            self.in_bppx: 'Bits per pixel',
-            self.in_duty_cycle: 'Duty cycle',
-            self.in_dl_time: 'Downlink time',
-            self.in_req_dl_ebn0: 'Required downlink Eb/N0',
-            
-            # link information
-            self.in_dl_f: 'Downlink frequency',
-            self.in_turn_around: 'Turn around ratio',
-            self.in_tx_loss_factor: 'Transmitter loss factor',
-            self.in_rx_loss_factor: 'Receiver loss factor',
-            self.in_path_loss: 'Path loss',
-            self.in_up_req_ebn0: 'Required uplink Eb/N0',
-            self.in_up_r_mantissa: 'Uplink data rate mantissa',
-            self.in_up_r_exp: 'Uplink data rate exponent',
-            self.in_orbit_alt: 'Orbit altitude',
-            
-            # spacecraft
-            self.in_sc_power: 'Spacecraft transmitter power',
-            self.in_sc_ant_d: 'Spacecraft antenna diameter',
-            self.in_sc_ant_eta: 'Spacecraft antenna efficiency',
-            self.in_sc_point: 'Spacecraft pointing offset',
-            self.in_sc_t_sys: 'Spacecraft system noise temperature',
-            
-            # ground station
-            self.in_gs_power: 'Ground station transmitter power',
-            self.in_gs_ant_d: 'Ground station antenna diameter',
-            self.in_gs_point: 'Ground station pointing offset',
-            self.in_gs_ant_eta: 'Ground station antenna efficiency',
-            self.in_gs_t_sys: 'Ground station system noise temperature',
-        }
-        
-        self.calculate.clicked.connect(self.check_for_errors)
-        self.dropdown_planet.currentIndexChanged.connect(self.check_planet_choice)
-        self.planet_idx = 0
-        self.in_elong.setDisabled(True)
-        self.colours = {
-            'gray': 'QLineEdit { background-color: lightgray }',
-            'red': 'QLineEdit { background-color: rgb(255, 200, 200) }',
-            'white': 'QLineEdit { background-color: white }',
-            'margin_green': 'QLabel { background-color: lightgreen }',
-            'margin_red': 'QLabel { background-color: rgb(255, 200, 200) }'
-        }
-        self.in_elong.setStyleSheet(self.colours['gray'])
-        
-        for input_box in self.all_text_inputs_with_validators:
-            input_box.textChanged.connect(lambda x, input_box=input_box: self.text_changed(input_box))
-        self.in_elong.textChanged.connect(lambda: self.text_changed(self.in_elong))
-        self.in_elev.textChanged.connect(lambda: self.text_changed(self.in_elev))
-        
-        self.set_tab_order()
-
-    # ignore this
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.calculate.setText(_translate("MainWindow", "Calulate Link Budget\n[CTRL + Enter]"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Link Budget Calculator"))
+        self.calculate.setText(_translate("MainWindow", "Calculate Link Budget [CTRL + Enter]"))
         self.calculate.setShortcut(_translate("MainWindow", "Ctrl+Return"))
         self.link_info_groupbox.setTitle(_translate("MainWindow", "Link information"))
         self.orbit_groupbox.setTitle(_translate("MainWindow", "Orbit information"))
@@ -663,7 +570,160 @@ class Ui_MainWindow(object):
         self.out_ul_eb_n0_req.setText(_translate("MainWindow", "+0.00"))
         self.out_ul_margin.setText(_translate("MainWindow", "+0.00"))
         self.label_133.setText(_translate("MainWindow", "Parameter name"))
+        self.loadbutton.setText(_translate("MainWindow", "Load [Ctrl + O]"))
+        self.loadbutton.setShortcut(_translate("MainWindow", "Ctrl+O"))
+        self.savebutton.setText(_translate("MainWindow", "Save [Ctrl + S]"))
+        self.savebutton.setShortcut(_translate("MainWindow", "Ctrl+S"))
 
+    # for my sanity
+    def setup(self):
+        self.validate_non_negative = QtGui.QDoubleValidator(0, 1e100, 100)
+        self.validate_allow_negative = QtGui.QDoubleValidator()
+        self.validate_percentage = QtGui.QDoubleValidator(0, 100, 100)
+        self.validate_zero_to_one = QtGui.QDoubleValidator(0, 1, 100)
+        self.validate_integer = QtGui.QIntValidator()
+        self.validate_special_dl_time = QtGui.QDoubleValidator(0, 24, 100) 
+        self.validate_special_turn_around_ratio = QtGui.QRegularExpressionValidator(
+            QtCore.QRegularExpression(r'([0-9]+(/[0-9]+)+)'))
+        self.validate_special_mantissa = QtGui.QDoubleValidator(1, 10, 100)
+        self.validate_special_elongation = QtGui.QDoubleValidator(0, 180, 100)
+        self.validate_special_elevation = QtGui.QDoubleValidator(0, 90, 100)
+
+        self.all_text_inputs_with_validators = {
+            # downlink information
+            self.in_swath_width: self.validate_non_negative,
+            self.in_px_size: self.validate_non_negative,
+            self.in_bppx: self.validate_non_negative,
+            self.in_duty_cycle: self.validate_zero_to_one,
+            self.in_dl_time: self.validate_special_dl_time,
+            self.in_req_dl_ebn0: self.validate_allow_negative,
+            
+            # link information
+            self.in_dl_f: self.validate_non_negative,
+            self.in_turn_around: self.validate_special_turn_around_ratio,
+            self.in_tx_loss_factor: self.validate_zero_to_one,
+            self.in_rx_loss_factor: self.validate_zero_to_one,
+            self.in_path_loss: self.validate_allow_negative,
+            self.in_up_req_ebn0: self.validate_allow_negative,
+            self.in_up_r_mantissa: self.validate_special_mantissa,
+            self.in_up_r_exp: self.validate_integer,
+            self.in_orbit_alt: self.validate_non_negative,
+            
+            # spacecraft
+            self.in_sc_power: self.validate_non_negative,
+            self.in_sc_ant_d: self.validate_non_negative,
+            self.in_sc_ant_eta: self.validate_zero_to_one,
+            self.in_sc_point: self.validate_non_negative,
+            self.in_sc_t_sys: self.validate_non_negative,
+            
+            # ground station
+            self.in_gs_power: self.validate_non_negative,
+            self.in_gs_ant_d: self.validate_non_negative,
+            self.in_gs_point: self.validate_non_negative,
+            self.in_gs_ant_eta: self.validate_zero_to_one,
+            self.in_gs_t_sys: self.validate_non_negative,
+        }
+        
+        self.normal_names = {
+            # downlink information
+            self.in_swath_width: 'Payload swath width',
+            self.in_px_size: 'Pixel size',
+            self.in_bppx: 'Bits per pixel',
+            self.in_duty_cycle: 'Duty cycle',
+            self.in_dl_time: 'Downlink time',
+            self.in_req_dl_ebn0: 'Required downlink Eb/N0',
+            
+            # link information
+            self.in_dl_f: 'Downlink frequency',
+            self.in_turn_around: 'Turn around ratio',
+            self.in_tx_loss_factor: 'Transmitter loss factor',
+            self.in_rx_loss_factor: 'Receiver loss factor',
+            self.in_path_loss: 'Path loss',
+            self.in_up_req_ebn0: 'Required uplink Eb/N0',
+            self.in_up_r_mantissa: 'Uplink data rate mantissa',
+            self.in_up_r_exp: 'Uplink data rate exponent',
+            self.in_orbit_alt: 'Orbit altitude',
+            
+            # spacecraft
+            self.in_sc_power: 'Spacecraft transmitter power',
+            self.in_sc_ant_d: 'Spacecraft antenna diameter',
+            self.in_sc_ant_eta: 'Spacecraft antenna efficiency',
+            self.in_sc_point: 'Spacecraft pointing offset',
+            self.in_sc_t_sys: 'Spacecraft system noise temperature',
+            
+            # ground station
+            self.in_gs_power: 'Ground station transmitter power',
+            self.in_gs_ant_d: 'Ground station antenna diameter',
+            self.in_gs_point: 'Ground station pointing offset',
+            self.in_gs_ant_eta: 'Ground station antenna efficiency',
+            self.in_gs_t_sys: 'Ground station system noise temperature',
+            
+            # special
+            self.in_elong: 'Elongation angle',
+            self.in_elev: 'Elevation angle',
+        }
+        
+        self.calculate.clicked.connect(self.check_for_errors)
+        self.savebutton.clicked.connect(self.save_json)
+        self.loadbutton.clicked.connect(self.load_json)
+        self.dropdown_planet.currentIndexChanged.connect(self.check_planet_choice)
+        self.planet_idx = 0
+        self.in_elong.setDisabled(True)
+        self.colours = {
+            'gray': 'QLineEdit { background-color: lightgray }',
+            'red': 'QLineEdit { background-color: rgb(255, 200, 200) }',
+            'white': 'QLineEdit { background-color: white }',
+            'margin_green': 'QLabel { background-color: lightgreen }',
+            'margin_red': 'QLabel { background-color: rgb(255, 200, 200) }'
+        }
+        self.in_elong.setStyleSheet(self.colours['gray'])
+        
+        for input_box in self.all_text_inputs_with_validators:
+            input_box.textChanged.connect(lambda x, input_box=input_box: self.text_changed(input_box))
+        self.in_elong.textChanged.connect(lambda: self.text_changed(self.in_elong))
+        self.in_elev.textChanged.connect(lambda: self.text_changed(self.in_elev))
+        
+        self.set_tab_order()
+
+    def save_json(self):
+        file_to_save = QtWidgets.QFileDialog.getSaveFileName(
+            self.savebutton,'Save configuration', '.', 'JSON Files (*.json)')
+        if file_to_save[0]:
+            with open(file_to_save[0], 'w') as f:
+                json.dump(self.generate_json(), f)
+        
+    def load_json(self):
+        file_to_open = QtWidgets.QFileDialog.getOpenFileName(
+            self.loadbutton, 'Open configuration', '.', 'JSON Files (*.json)')
+        if file_to_open[0]:
+            with open(file_to_open[0], 'r') as f:
+                self.load_configuration(json.load(f))
+
+    def generate_json(self):
+        all_field_contents = dict()
+        for field in self.all_text_inputs_with_validators:
+            field_name = self.normal_names[field]
+            field_text = field.text()
+            all_field_contents[field_name] = field_text
+        all_field_contents['Planet selection'] = self.dropdown_planet.currentIndex()
+        all_field_contents['Elongation angle'] = self.in_elong.text()
+        all_field_contents['Elevation angle'] = self.in_elev.text()
+        return {'all_field_contents': all_field_contents}
+        
+    def load_configuration(self, data):
+        if data['all_field_contents']:
+            for common_name, field_value in data['all_field_contents'].items():
+                if common_name == 'Elongation angle':
+                    self.in_elong.setText(field_value)
+                elif common_name == 'Elevation angle':
+                    self.in_elev.setText(field_value)
+                elif common_name == 'Planet selection':
+                    self.dropdown_planet.setCurrentIndex(int(field_value))
+                else:
+                    for obj, normal_name in self.normal_names.items():
+                        if normal_name == common_name:
+                            obj.setText(field_value)
+    
     def set_tab_order(self):
         self.centralwidget.setTabOrder(self.in_swath_width, self.in_px_size)
         self.centralwidget.setTabOrder(self.in_px_size, self.in_bppx)
@@ -708,14 +768,14 @@ class Ui_MainWindow(object):
         input_box.setStyleSheet('QLineEdit { background-color: rgb(255, 255, 255)}')
 
     def show_calculation_error(self, error_text):
-        msg = QMessageBox()
+        msg = QtWidgets.QMessageBox()
         msg.setWindowTitle("Calculation error!")
         msg.setText("There were one or more errors with the following input fields:")
-        msg.setIcon(QMessageBox.Icon.Critical)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
         msg.setInformativeText(error_text)
         msg.exec()
     
-    def check_for_errors(self):
+    def check_for_errors(self):        
         errors_found = False
         error_string = ''
         
@@ -766,7 +826,6 @@ class Ui_MainWindow(object):
         val_str += str(round(abs(value), 2))
         return val_str
         
-    
     def calculate_budget(self):
         # INPUT PROCESSING
         f_ghz_downlink = float(self.in_dl_f.text())
@@ -866,6 +925,8 @@ class Ui_MainWindow(object):
             self.out_ul_margin.setStyleSheet(self.colours['margin_green'])
         else:
             self.out_ul_margin.setStyleSheet(self.colours['margin_red'])
+            
+    # todo: implement JSON import/export
     
 
 if __name__ == "__main__":
