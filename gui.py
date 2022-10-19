@@ -10,9 +10,8 @@
 # this code is barely comprehensible. scroll down to 'code starts here' 
 # and ignore the entirety of retranslateUi
 
-from dataclasses import field
+import os
 import json
-from pprint import pprint
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 
@@ -686,15 +685,17 @@ class Ui_MainWindow(object):
         self.set_tab_order()
 
     def save_json(self):
+        default_dir = 'cases' if os.path.isdir('cases') else '.'
         file_to_save = QtWidgets.QFileDialog.getSaveFileName(
-            self.savebutton,'Save configuration', '.', 'JSON Files (*.json)')
+            self.savebutton,'Save configuration', default_dir, 'JSON Files (*.json)')
         if file_to_save[0]:
             with open(file_to_save[0], 'w') as f:
                 json.dump(self.generate_json(), f)
         
     def load_json(self):
+        default_dir = 'cases' if os.path.isdir('cases') else '.'
         file_to_open = QtWidgets.QFileDialog.getOpenFileName(
-            self.loadbutton, 'Open configuration', '.', 'JSON Files (*.json)')
+            self.loadbutton, 'Open configuration', default_dir, 'JSON Files (*.json)')
         if file_to_open[0]:
             with open(file_to_open[0], 'r') as f:
                 self.load_configuration(json.load(f))
@@ -723,6 +724,7 @@ class Ui_MainWindow(object):
                     for obj, normal_name in self.normal_names.items():
                         if normal_name == common_name:
                             obj.setText(field_value)
+        self.check_planet_choice()
     
     def set_tab_order(self):
         self.centralwidget.setTabOrder(self.in_swath_width, self.in_px_size)
