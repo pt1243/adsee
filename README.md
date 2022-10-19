@@ -5,6 +5,13 @@
 3. Run `pip install -r requirements.txt`.
 4. Run `gui.py`.
 
+# Usage
+
+- Fill in numbers in the appropriate fields
+- Click 'Calculate Link Budget' (Ctrl + Enter) to see the results
+- Load configuration files by clicking 'Load' (Ctrl + O)
+- Save the current configuration to disk by clicking 'Save' (Ctrl + S)
+
 # License
 Copyright (C) 2022 Jeremy Smith.
 
