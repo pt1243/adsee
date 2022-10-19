@@ -724,6 +724,7 @@ class Ui_MainWindow(object):
                     for obj, normal_name in self.normal_names.items():
                         if normal_name == common_name:
                             obj.setText(field_value)
+        self.check_planet_choice()
         if data['constraints']:
             for obj in self.all_text_inputs_with_validators:
                 obj.setDisabled(False)
@@ -734,7 +735,12 @@ class Ui_MainWindow(object):
                         if constraint:
                             obj.setDisabled(True)
                             obj.setStyleSheet(self.colours['gray'])
-        self.check_planet_choice()
+            self.in_elong.setDisabled(True)
+            self.in_elev.setDisabled(True)
+            self.dropdown_planet.setDisabled(True)
+            self.in_elong.setStyleSheet(self.colours['gray'])
+            self.in_elev.setStyleSheet(self.colours['gray'])
+            self.dropdown_planet.setStyleSheet('QComboBox { background-color: lightgray } ')
     
     def set_tab_order(self):
         self.centralwidget.setTabOrder(self.in_swath_width, self.in_px_size)
