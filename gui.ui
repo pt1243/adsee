@@ -18,14 +18,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>620</y>
+      <y>590</y>
       <width>251</width>
-      <height>41</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Calulate Link Budget
-[CTRL + Enter]</string>
+     <string>Calulate Link Budget [CTRL + Enter]</string>
     </property>
     <property name="shortcut">
      <string>Ctrl+Return</string>
@@ -243,7 +242,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>240</y>
+      <y>230</y>
       <width>251</width>
       <height>181</height>
      </rect>
@@ -403,9 +402,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>430</y>
+      <y>410</y>
       <width>251</width>
-      <height>181</height>
+      <height>171</height>
      </rect>
     </property>
     <property name="title">
@@ -925,6 +924,38 @@
       </item>
      </layout>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="loadbutton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>630</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load [Ctrl + O]</string>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+O</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="savebutton">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>630</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save [Ctrl + S]</string>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
