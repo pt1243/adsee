@@ -53,6 +53,8 @@
         "Ground station antenna diameter": false, 
         "Ground station pointing offset": false, 
         "Ground station antenna efficiency": false, 
-        "Ground station system noise temperature": false
+        "Ground station system noise temperature": false,
+        "Elongation angle": true, 
+        "Elevation angle": true
     }
 }

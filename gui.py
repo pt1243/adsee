@@ -735,11 +735,19 @@ class Ui_MainWindow(object):
                         if constraint:
                             obj.setDisabled(True)
                             obj.setStyleSheet(self.colours['gray'])
-            self.in_elong.setDisabled(True)
-            self.in_elev.setDisabled(True)
+            if data['constraints']['Elongation angle']:
+                self.in_elong.setDisabled(True)
+                self.in_elong.setStyleSheet(self.colours['gray'])
+            else:
+                self.in_elong.setDisabled(False)
+                self.in_elong.setStyleSheet(self.colours['white'])
+            if data['constraints']['Elevation angle']:
+                self.in_elev.setDisabled(True)
+                self.in_elev.setStyleSheet(self.colours['gray'])
+            else:
+                self.in_elev.setDisabled(False)
+                self.in_elev.setStyleSheet(self.colours['white'])
             self.dropdown_planet.setDisabled(True)
-            self.in_elong.setStyleSheet(self.colours['gray'])
-            self.in_elev.setStyleSheet(self.colours['gray'])
     
     def set_tab_order(self):
         self.centralwidget.setTabOrder(self.in_swath_width, self.in_px_size)
