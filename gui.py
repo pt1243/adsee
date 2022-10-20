@@ -740,7 +740,6 @@ class Ui_MainWindow(object):
             self.dropdown_planet.setDisabled(True)
             self.in_elong.setStyleSheet(self.colours['gray'])
             self.in_elev.setStyleSheet(self.colours['gray'])
-            self.dropdown_planet.setStyleSheet('QComboBox { background-color: lightgray } ')
     
     def set_tab_order(self):
         self.centralwidget.setTabOrder(self.in_swath_width, self.in_px_size)
