@@ -784,10 +784,12 @@ class Ui_MainWindow(object):
             self.in_elong.setDisabled(True)
             self.in_elev.setDisabled(False)
             self.in_elong.setStyleSheet(self.colours['gray'])
+            self.in_elev.setStyleSheet(self.colours['white'])
         else: # interplanetary
             self.in_elong.setDisabled(False)
             self.in_elev.setDisabled(True)
             self.in_elev.setStyleSheet(self.colours['gray'])
+            self.in_elong.setStyleSheet(self.colours['white'])
             
     def text_changed(self, input_box):
         input_box.setStyleSheet('QLineEdit { background-color: rgb(255, 255, 255)}')
